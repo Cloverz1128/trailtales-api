@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-twitter-api
+    ports:
+      - "8000:8000"     # Django
+      - "9005:22"       # SSH
+    volumes:
+      - .:/twitter-api
+    tty: true
