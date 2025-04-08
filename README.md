@@ -8,3 +8,10 @@ docker compose build
 docker compose up
 docker compose exec -it api bash
 ```
+
+### Default Credentials
+
+| Service | Username | Password | Email |
+| ---- | ---- | ---- | ----- |
+| Django Admin | admin | admin | admin@email.com |
+| MySQL | root | P@sSw0rD |

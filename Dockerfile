@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     vim sudo rsync dos2unix iproute2 \
     python3 python3-pip python3-dev \
     pkg-config libgirepository1.0-dev libcairo2-dev \
-    openssh-server tree
+    openssh-server tree \
+    lsof net-tools
 
 # Download and install MySQL APT repository configuration (non-interactively)
 RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.15-1_all.deb && \
