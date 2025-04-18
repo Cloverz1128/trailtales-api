@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
+from rest_framework import exceptions
 from django.core.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,6 +11,13 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+
+    def validate(self, data):
+        username = data['username'].lower()
+        if not User.objects.filter(username=username).exists():
+            raise ValidationError({'username': 'User does not exist.'})
+        data['username'] = username
+        return data
 
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=20, min_length=6)
