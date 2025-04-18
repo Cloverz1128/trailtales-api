@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from rest_framework import exceptions
+from django.core.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,11 +23,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     # will be called when is_valid is called
     def validate(self, data):  
         if User.objects.filter(username=data['username'].lower()).exists(): 
-            raise exceptions.ValidationError({  
+            raise ValidationError({  
                 'message': 'This user name has been registered.'  
             })  
         if User.objects.filter(email=data['email'].lower()).exists():  
-            raise exceptions.ValidationError({  
+            raise ValidationError({  
                 'message': 'This email has been occupied.'  
             })  
         return data
