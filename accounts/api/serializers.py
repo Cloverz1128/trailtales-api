@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from rest_framework import exceptions
 from django.core.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
