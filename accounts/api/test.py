@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
-SIGNUP_URL = '/api/accounts/signup/'
+SIGNUP_URL = '/api/accounts/register/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
 
 
@@ -12,9 +12,9 @@ class AccountApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = self.createUser(
-            username='dummy',
-            email='dummy@gmail.com',
-            password='dummy',
+            username='testuser',
+            email='testuser@email.com',
+            password='correct password',
         )
 
     def createUser(self, username, email, password):
@@ -44,7 +44,7 @@ class AccountApiTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.data['user'], None)
-        self.assertEqual(response.data['user']['email'], 'admin@jiuzhang.com')
+        self.assertEqual(response.data['user']['email'], 'testuser@email.com')
 
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
@@ -73,7 +73,7 @@ class AccountApiTests(TestCase):
     def test_signup(self):
         data = {
             'username': 'someone',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@email.com',
             'password': 'any password',
         }
         # test get
@@ -92,7 +92,7 @@ class AccountApiTests(TestCase):
         # password too short
         response = self.client.post(SIGNUP_URL, {
             'username': 'someone',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@email.com',
             'password': '123',
         })
         # print(response.data)
@@ -101,7 +101,7 @@ class AccountApiTests(TestCase):
         # username too log
         response = self.client.post(SIGNUP_URL, {
             'username': 'username is tooooooooooooooooo loooooooong',
-            'email': 'someone@jiuzhang.com',
+            'email': 'someone@email.com',
             'password': 'any password',
         })
         # print(response.data)
