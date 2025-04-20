@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
-SIGNUP_URL = '/api/accounts/register/'
+REGISTER_URL = '/api/accounts/register/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
 
 
@@ -70,7 +70,7 @@ class AccountApiTests(TestCase):
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], False)
 
-    def test_signup(self):
+    def test_register(self):
         data = {
             'username': 'someone',
             'email': 'someone@email.com',
