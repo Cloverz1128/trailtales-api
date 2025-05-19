@@ -77,11 +77,11 @@ class AccountApiTests(TestCase):
             'password': 'any password',
         }
         # test get
-        response = self.client.get(SIGNUP_URL, data)
+        response = self.client.get(REGISTER_URL, data)
         self.assertEqual(response.status_code, 405)
 
         # test invalid email
-        response = self.client.post(SIGNUP_URL, {
+        response = self.client.post(REGISTER_URL, {
             'username': 'someone',
             'email': 'not a correct email',
             'password': 'any password'
@@ -90,7 +90,7 @@ class AccountApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # password too short
-        response = self.client.post(SIGNUP_URL, {
+        response = self.client.post(REGISTER_URL, {
             'username': 'someone',
             'email': 'someone@email.com',
             'password': '123',
@@ -99,7 +99,7 @@ class AccountApiTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
         # username too log
-        response = self.client.post(SIGNUP_URL, {
+        response = self.client.post(REGISTER_URL, {
             'username': 'username is tooooooooooooooooo loooooooong',
             'email': 'someone@email.com',
             'password': 'any password',
@@ -107,7 +107,7 @@ class AccountApiTests(TestCase):
         # print(response.data)
         self.assertEqual(response.status_code, 400)
 
-        response = self.client.post(SIGNUP_URL, data)
+        response = self.client.post(REGISTER_URL, data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['user']['username'], 'someone')
 
