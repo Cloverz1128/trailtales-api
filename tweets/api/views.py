@@ -3,10 +3,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from tweets.models import Tweet
-from tweets.api.serializers import TweetSerializer
+from tweets.api.serializers import TweetSerializer, TweetSerializerForCreate
 
 class TweetViewSet(GenericViewSet):
-    serializer_class = TweetSerializer
+    serializer_class = TweetSerializerForCreate
 
     def get_permissions(self):
         if self.action == 'list': 
@@ -23,4 +23,17 @@ class TweetViewSet(GenericViewSet):
         return Response({"tweets": serializer.data,}) 
 
     def create(self, request):
-        pass
+        serializer = TweetSerializerForCreate(
+            data=request.data,
+            context={'request': request} # pass whole request as context
+        )
+        if not serializer.is_valid():
+            return Response({
+                'success': False,
+                'message': 'Please check your input',
+                'errors': serializer.errors,
+            }, status=400)
+        
+        # save will call create method in TweetSerializerForCreate
+        tweet = serializer.save()
+        return Response(TweetSerializer(tweet).data, status=201)
