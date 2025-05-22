@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # project apps
     'accounts',
     'tweets',
+    'friendships',
 ]
 
 MIDDLEWARE = [
