@@ -16,21 +16,21 @@ class FriendshipViewSet(GenericViewSet):
     
     queryset = User.objects.all()
     
-    # @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
-    # def followers(self, request, pk): 
-    #     friendships = Friendship.objects.filter(to_user=pk).order_by('-created_at')
-    #     serializer = FollowerSerializer(friendships, many=True)
-    #     return Response({
-    #         'followers': serializer.data,
-    #     }, status=status.HTTP_200_OK)
+    @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
+    def followers(self, request, pk): 
+        friendships = Friendship.objects.filter(to_user=pk).order_by('-created_at')
+        serializer = FollowerSerializer(friendships, many=True)
+        return Response({
+            'followers': serializer.data,
+        }, status=status.HTTP_200_OK)
     
-    # @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
-    # def followings(self, request, pk):
-    #     friendships = Friendship.objects.filter(from_user=pk)
-    #     serializer = FollowingSerializer(friendships, many=True)
-    #     return Response({
-    #         'followings': serializer.data,
-    #     }, status.HTTP_200_OK)
+    @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
+    def followings(self, request, pk):
+        friendships = Friendship.objects.filter(from_user=pk)
+        serializer = FollowingSerializer(friendships, many=True)
+        return Response({
+            'followings': serializer.data,
+        }, status.HTTP_200_OK)
 
     # the rest api:
     # friendships/?from_user_id=1 to  get following list
