@@ -36,7 +36,6 @@ class FriendshipViewSet(GenericViewSet):
     # friendships/?from_user_id=1 to  get following list
     # friendships/?to_user_id=1 to get follower list
     def list(self, request):
-        print(request.query_params)
         from_user_id = request.query_params.get('from_user_id')
         to_user_id = request.query_params.get('to_user_id')
 
