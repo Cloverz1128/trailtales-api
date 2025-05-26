@@ -10,12 +10,14 @@ from friendships.models import Friendship
 from friendships.api.serializers import (
     FollowerSerializer,
     FollowingSerializer,
+    FriendshipSerialierForCreate,
 )
 
 class FriendshipViewSet(GenericViewSet):
-    
+    serializer_class = FriendshipSerialierForCreate
     queryset = User.objects.all()
     
+    # friendships/1/followers
     @action(methods=['GET'], detail=True, permission_classes=[AllowAny])
     def followers(self, request, pk): 
         friendships = Friendship.objects.filter(to_user=pk).order_by('-created_at')
@@ -57,3 +59,41 @@ class FriendshipViewSet(GenericViewSet):
             return Response({
             'message': 'This is friendship homepage'
         })
+
+    # friendships/<pk>/follow/
+    @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    def follow(self, request, pk):
+        follow_user = self.get_object() # check if user with id=pk exist (from queryset)
+        serializer = FriendshipSerialierForCreate(data={
+                "from_user_id": request.user.id,
+                "to_user_id": pk,
+        })
+
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Please check input.",
+                "errors":serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        instance = serializer.save()
+        return Response(
+            FollowingSerializer(instance).data, 
+            status=status.HTTP_201_CREATED,
+        )
+    
+    @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    def unfollow(self, request, pk):
+        unfollower_user = self.get_object() # raise 404， if no user id=pk
+        if request.user.id == unfollower_user.id:
+            return Response({
+                'success': False,
+                'message': 'You cannot unfollow yourself',
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        deleted, _ = Friendship.objects.filter(
+            from_user=request.user,
+            to_user=pk,
+        ).delete()
+        
+        return Response({'success': True, 'deleted': deleted})
