@@ -8,8 +8,6 @@ TWEET_CREATE_URL = '/api/tweets/'  # for POST
 
 class TweetApiTests(TestCase):
     def setUp(self):
-        
-        self.anonymous_client = APIClient()
 
         self.user1 = self.create_user('user1')
         self.tweets1 = [self.create_tweet(
