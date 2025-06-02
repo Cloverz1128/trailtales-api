@@ -37,7 +37,7 @@ class CommentViewSet(viewsets.GenericViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         queryset = self.get_queryset() 
-        comments = self.filter_queryset(queryset).order_by('created_at')
+        comments = self.filter_queryset(queryset).prefetch_related('user').order_by('created_at')
 
         serializer = CommentSerializer(comments, many=True)
         return Response({
