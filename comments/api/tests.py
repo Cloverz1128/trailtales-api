@@ -20,6 +20,35 @@ class CommentApiTests(TestCase):
         # user1 create tweet
         self.tweet = self.create_tweet(self.testuser1)
 
+    def test_list(self):
+        # require tweet_id
+        response = self.anonymous_client.get(COMMENT_URL)
+        self.assertEqual(response.status_code, 400)
+        #  has tweet_id, no comments
+        response = self.anonymous_client.get(COMMENT_URL, {
+            'tweet_id': self.tweet.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data['comments']), 0)
+        # comments in created_at order
+        self.create_comment(self.testuser1, self.tweet, '1')
+        self.create_comment(self.testuser2, self.tweet, '2')
+        self.create_comment(self.testuser2, self.create_tweet(self.testuser2), '3')
+        response = self.anonymous_client.get(COMMENT_URL, {
+            'tweet_id': self.tweet.id
+        })
+        self.assertEqual(len(response.data['comments']), 2)
+        self.assertEqual(response.data['comments'][0]['content'], "1")
+        self.assertEqual(response.data['comments'][1]['content'], "2")
+
+        # with user_id and tweet_id, only need tweet_id
+        response = self.anonymous_client.get(COMMENT_URL, {
+            'tweet_id': self.tweet.id,
+            'user_id': self.testuser1.id,
+        })
+        self.assertEqual(len(response.data['comments']), 2)
+
+
     def test_create(self):
         # anonymous_client can not create
         response = self.anonymous_client.post(COMMENT_URL)
