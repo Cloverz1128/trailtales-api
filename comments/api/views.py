@@ -3,10 +3,12 @@ from comments.models import Comment
 from comments.api.serializers import (
     CommentSerializer, 
     CommentSerializerForCreate,
+    CommentSerializerForUpdate,
 )
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from comments.api.permissions import IsObjectOwner
 from rest_framework.response import Response
 
 class CommentViewSet(viewsets.GenericViewSet):
@@ -20,9 +22,10 @@ class CommentViewSet(viewsets.GenericViewSet):
         if self.action == "create":
             return [IsAuthenticated()]
 
-        # if self.action in ["destroy", 'update']:
-        #     # attention the order, 先check authentication first, then check owner
-        #     return [IsAuthenticated(), IsObjectOwner()]  # IsObjectOwner is self-defined permissions
+        if self.action in ["destroy", 'update']:
+            # attention the order, check authentication first, then check owner
+            return [IsAuthenticated(), IsObjectOwner()]  # IsObjectOwner is self-defined permissions
+        
         return [AllowAny()]
 
     def create(self, request, *args, **kwargs):
@@ -44,3 +47,26 @@ class CommentViewSet(viewsets.GenericViewSet):
             CommentSerializer(instance).data,
             status=status.HTTP_201_CREATED
         )
+    
+    def update(self, request, *args, **kwargs):
+        # if serializer has instance, then when call save() it will call update() in serializer, otherwise call create()
+        comment = self.get_object() 
+        serializer = CommentSerializerForUpdate(
+            instance=comment, 
+            data=request.data, 
+        )
+        if not serializer.is_valid():
+            return Response({
+                'message': "Please check input",
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        comment = serializer.save()
+        return Response(
+            CommentSerializer(comment).data, 
+            status=status.HTTP_200_OK
+        )
+
+    def destroy(self, request, *args, **kwargs): # have to add *args here, otherwise can not pass pk
+        comment = self.get_object()
+        comment.delete()
+        return Response({'success': True}, status=status.HTTP_200_OK)
