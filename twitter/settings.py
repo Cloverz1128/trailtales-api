@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '@ogdw#d_95vav+hhhh4+j3*gzj$ds7ppg8l7e6d*6ul(8f_g#a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
 INTERNAL_IPS = ['192.168.65.1']
@@ -31,6 +31,7 @@ INTERNAL_IPS = ['192.168.65.1']
 # Application definition
 
 INSTALLED_APPS = [
+    # django default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,12 +41,14 @@ INSTALLED_APPS = [
     # third party
     'rest_framework',
     'debug_toolbar',
+    'django_filters',
     
     # project apps
     'accounts',
     'tweets',
     'friendships',
     'newsfeeds',
+    'comments',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +61,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # pagination setting
+    'PAGE_SIZE': 10,
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ]
+}
+
 
 ROOT_URLCONF = 'twitter.urls'
 
@@ -132,3 +144,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try: 
+	from .local_settings import *
+except:
+	pass
