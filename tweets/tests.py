@@ -1,7 +1,5 @@
 from datetime import timedelta
 from testing.testcases import TestCase
-from django.contrib.auth.models import User
-from tweets.models import Tweet
 from utils.time_helpers import utc_now
 
 
