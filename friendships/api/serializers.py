@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from rest_framework.serializers import IntegerField
 from rest_framework.exceptions import ValidationError
 from accounts.api.serializers import UserSerializerForFriendship
-from django.contrib.auth.models import User
 
 from friendships.models import Friendship
 

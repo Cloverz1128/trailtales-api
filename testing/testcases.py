@@ -5,7 +5,7 @@ from tweets.models import Tweet
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from likes.models import Like
-
+from newsfeeds.models import NewsFeed
 
 
 class TestCase(DjangoTestCase):
@@ -28,6 +28,12 @@ class TestCase(DjangoTestCase):
             email=email,
             password=password,
         )
+    
+    def create_user_and_client(self, *args, **kwargs):
+        user = self.create_user(*args, **kwargs)
+        client = APIClient()
+        client.force_authenticate(user)
+        return user, client
 
     def create_tweet(self, user, content=None):
         if content is None:
@@ -53,3 +59,6 @@ class TestCase(DjangoTestCase):
             object_id=target.id,
         )
         return instance
+    
+    def create_newsfeed(self, user, tweet):
+        return NewsFeed.objects.create(user=user, tweet=tweet)
