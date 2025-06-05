@@ -5,7 +5,7 @@ from tweets.models import Tweet
 from comments.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from likes.models import Like
-
+from newsfeeds.models import NewsFeed
 
 
 class TestCase(DjangoTestCase):
@@ -60,3 +60,5 @@ class TestCase(DjangoTestCase):
         )
         return instance
     
+    def create_newsfeed(self, user, tweet):
+        return NewsFeed.objects.create(user=user, tweet=tweet)
