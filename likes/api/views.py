@@ -1,6 +1,7 @@
 from likes.api.serializers import (
     LikeSerializer,
     LikeSerializerForCreate,
+    LikeSerializerForCancel,
 )
 from likes.models import Like
 from rest_framework import status
