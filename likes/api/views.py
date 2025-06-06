@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from utils.decorators import required_params
+from inbox.services import NotificationService
 
 
 class LikeViewSet(GenericViewSet):
@@ -29,7 +30,9 @@ class LikeViewSet(GenericViewSet):
                 'message': 'Please check input',
                 'errors': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
-        instance = serializer.save()
+        instance, created = serializer.get_or_create()
+        if created:
+            NotificationService.send_like_notification(instance)
         return Response(
             LikeSerializer(instance).data,
             status=status.HTTP_201_CREATED

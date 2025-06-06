@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from comments.api.permissions import IsObjectOwner
 from rest_framework.response import Response
 from utils.decorators import required_params
+from inbox.services import NotificationService
 
 class CommentViewSet(viewsets.GenericViewSet):
     """
@@ -59,6 +60,7 @@ class CommentViewSet(viewsets.GenericViewSet):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         instance = serializer.save()
+        NotificationService.send_comment_notification(instance)
         return Response(
             CommentSerializer(
                 instance,

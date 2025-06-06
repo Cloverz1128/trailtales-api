@@ -105,8 +105,7 @@ class FriendshipApiTests(TestCase):
         ts0 = response.data['followings'][0]['created_at']
         ts1 = response.data['followings'][1]['created_at']
         ts2 = response.data['followings'][2]['created_at']
-        print(ts0)
-        print(ts1)
+        
         self.assertEqual(ts0 > ts1, True)
         self.assertEqual(ts1 > ts2, True)
         self.assertEqual(

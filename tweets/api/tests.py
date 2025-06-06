@@ -58,7 +58,6 @@ class TweetApiTests(TestCase):
         # validate tweet content 
         # content can not be too short
         response = self.user1_client.post(TWEET_CREATE_URL, {'content': '1'})
-        # print(response.status_code) 
         self.assertEqual(response.status_code, 400)
         # content can not be too long
         response = self.user1_client.post(TWEET_CREATE_URL, {'content': '1'*141})
@@ -70,7 +69,6 @@ class TweetApiTests(TestCase):
             {'content': 'Hello this is my first tweet'}
         )
         self.assertEqual(response.status_code, 201)
-        # print(response.data)
         self.assertEqual(response.data['user']['id'], self.user1.id)
         self.assertEqual(Tweet.objects.count(), tweets_count + 1)
 
