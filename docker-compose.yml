@@ -7,8 +7,34 @@ services:
       dockerfile: Dockerfile
     container_name: my-twitter-api
     ports:
-      - "8000:8000"     # Django
-      - "9005:22"       # SSH
+      - "8000:8000"     # Django端口
+      - "9005:22"       # SSH端口
     volumes:
       - .:/twitter-api
+    depends_on:
+      - db
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin@1
+      - MYSQL_DATABASE=twitter_db
     tty: true
+
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    container_name: my-twitter-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: P@sSw0rD
+      MYSQL_DATABASE: twitter_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin@1
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
