@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['id', 'username', 'email']
 
 class UserSerializerForTweet(serializers.ModelSerializer):
     class Meta:

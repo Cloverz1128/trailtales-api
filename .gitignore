@@ -2,5 +2,8 @@
 
 __pycache__
 
+media
+
 *.log
-local_settings.py
+
+twitter/local_settings.py
