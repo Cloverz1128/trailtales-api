@@ -8,8 +8,6 @@ class LikeService(object):
         if user.is_anonymous:
             return False
 
-        print('this is target:', target)
-        print(target.__class__)
         return Like.objects.filter(
             content_type=ContentType.objects.get_for_model(target.__class__),
             object_id=target.id,
