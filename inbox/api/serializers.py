@@ -52,3 +52,16 @@ class NotificationSerializer(serializers.ModelSerializer):
             'id': obj.recipient.id,
             'username': obj.recipient.username
         }
+    
+
+class NotificationSerializerForUpdate(serializers.ModelSerializer):
+    unread = serializers.BooleanField()
+
+    class Meta:
+        model = Notification
+        fields = ('unread',)
+
+    def update(self, instance, validated_data):
+        instance.unread = validated_data['unread']
+        instance.save()
+        return instance

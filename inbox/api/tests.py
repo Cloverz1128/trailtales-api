@@ -118,3 +118,46 @@ class NotificationApiTests(TestCase):
         self.assertEqual(response.data['count'], 1)
         response = self.testuser1_client.get(NOTIFICATION_URL, {'unread': False})
         self.assertEqual(response.data['count'], 1)
+
+    def test_update(self):
+        self.testuser2_client.post(LIKE_URL, {
+            'content_type': 'tweet',
+            'object_id': self.testuser1_tweet.id,
+        })
+        comment = self.create_comment(self.testuser1, self.testuser1_tweet)
+        self.testuser2_client.post(LIKE_URL, {
+            'content_type': 'comment',
+            'object_id': comment.id,
+        })
+        notification = self.testuser1.notifications.first()
+
+        url = '/api/notifications/{}/'.format(notification.id)
+        # require put
+        response = self.testuser2_client.post(url, {'unread': False})
+        self.assertEqual(response.status_code, 405)
+        # notification can not be updated by others
+        response = self.anonymous_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 403)
+        
+        response = self.testuser2_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 404)
+        # updated to unread=False
+        response = self.testuser1_client.put(url, {'unread': False})
+        self.assertEqual(response.status_code, 200)
+        unread_url = '/api/notifications/unread-count/'
+        response = self.testuser1_client.get(unread_url)
+        self.assertEqual(response.data['unread_count'], 1)
+
+        # 再标记为未读
+        response = self.testuser1_client.put(url, {'unread': True})
+        response = self.testuser1_client.get(unread_url)
+        self.assertEqual(response.data['unread_count'], 2)
+        # 必须带 unread
+        response = self.testuser1_client.put(url, {'verb': 'newverb'})
+        self.assertEqual(response.status_code, 400)
+        # 不可修改其他的信息
+        response = self.testuser1_client.put(url,
+                                          {'verb': 'newverb', 'unread': False})
+        self.assertEqual(response.status_code, 200)
+        notification.refresh_from_db()
+        self.assertNotEqual(notification.verb, 'newverb')
