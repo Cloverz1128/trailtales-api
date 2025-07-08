@@ -99,16 +99,19 @@ WSGI_APPLICATION = 'twitter.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+import os
+
 DATABASES = {
-    'default': {  
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'twitter',  
-        'HOST': '0.0.0.0',  
-        'PORT': '3306',  
-        'USER': 'root',  
-        'PASSWORD': 'P@sSw0rD',  
-    }  
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('MYSQL_DATABASE', 'twitter_db'),
+        'USER': os.environ.get('MYSQL_USER', 'admin'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'admin@1'),
+        'HOST': os.environ.get('MYSQL_HOST', 'db'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
+    }
 }
+
 
 
 # Password validation
