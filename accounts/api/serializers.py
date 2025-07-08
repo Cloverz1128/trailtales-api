@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+from accounts.models import UserProfile
 from rest_framework import serializers
 from rest_framework import exceptions
 from django.core.exceptions import ValidationError
@@ -66,4 +67,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=password,  
             email=email  
         )  
+        # Create User Profile object
+        user.profile
         return user

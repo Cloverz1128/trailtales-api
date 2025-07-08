@@ -1,6 +1,6 @@
+from accounts.models import UserProfile
 from testing.testcases import TestCase
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
 
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
@@ -102,9 +102,15 @@ class AccountApiTests(TestCase):
         })
         self.assertEqual(response.status_code, 400)
 
+        # successful register
         response = self.client.post(REGISTER_URL, data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['user']['username'], 'someone')
 
+        # check user profile created
+        created_user_id = response.data['user']['id']
+        profile = UserProfile.objects.filter(user_id=created_user_id).first()
+        self.assertNotEqual(profile, None)
+        
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
