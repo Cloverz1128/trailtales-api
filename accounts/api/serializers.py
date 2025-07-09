@@ -7,22 +7,40 @@ from django.core.exceptions import ValidationError
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username']
 
-class UserSerializerForTweet(serializers.ModelSerializer):
+class UserSerializerWithProfile(UserSerializer):
+    nickname = serializers.CharField(source='profile.nickname')
+    avatar_url = serializers.SerializerMethodField()
+
+    def get_avatar_url(self, obj):
+        if obj.profile.avatar:
+            return obj.profile.avatar.url
+        return None
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'nickname', 'avatar_url')
+
+class UserProfileSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('nickname', 'avatar')
+
+class UserSerializerForTweet(UserSerializerWithProfile):
     class Meta:
         model = User
         fields = ['id', 'username']
 
-class UserSerializerForFriendship(serializers.ModelSerializer):
+class UserSerializerForFriendship(UserSerializerWithProfile):
     class Meta:
         model = User
         fields = ['id', 'username']
 
-class UserSerializerForComment(UserSerializerForTweet):
+class UserSerializerForComment(UserSerializerWithProfile):
     pass
 
-class UserSerializerForLike(UserSerializerForTweet):
+class UserSerializerForLike(UserSerializerWithProfile):
     pass
 
 class LoginSerializer(serializers.Serializer):
