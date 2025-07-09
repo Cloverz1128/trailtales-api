@@ -1,4 +1,4 @@
-# from comments.api.permissions import IsObjectOwner
+from utils.permissions import IsObjectOwner
 from comments.models import Comment
 from comments.api.serializers import (
     CommentSerializer, 
@@ -8,7 +8,7 @@ from comments.api.serializers import (
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from comments.api.permissions import IsObjectOwner
+from utils.permissions import IsObjectOwner
 from rest_framework.response import Response
 from utils.decorators import required_params
 from inbox.services import NotificationService
