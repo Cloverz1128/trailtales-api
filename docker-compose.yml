@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     container_name: my-twitter-api
     ports:
       - "8000:8000"     # Django端口
