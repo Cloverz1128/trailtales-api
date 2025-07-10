@@ -177,12 +177,12 @@ MEDIA_ROOT = 'media/'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211',
         'TIMEOUT': 86400,
     },
     'testing': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211',
         'TIMEOUT': 86400,
         'KEY_PREFIX': 'testing',
     },

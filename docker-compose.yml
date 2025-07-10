@@ -9,12 +9,14 @@ services:
       - .env
     container_name: my-twitter-api
     ports:
-      - "8000:8000"     # Django端口
-      - "9005:22"       # SSH端口
+      - "8000:8000"     # Django 端口
+      - "9005:22"       # SSH 端口
     volumes:
       - .:/twitter-api
     depends_on:
       - db
+      - redis
+      - memcached
     environment:
       - MYSQL_HOST=db
       - MYSQL_PORT=3306
@@ -37,6 +39,18 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:6.2
+    container_name: my-twitter-redis
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:alpine
+    container_name: my-twitter-memcached
+    ports:
+      - "11211:11211"
 
 volumes:
   mysql-data:
