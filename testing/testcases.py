@@ -1,4 +1,5 @@
 from django.test import TestCase as DjangoTestCase
+from django.core.cache import caches
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from tweets.models import Tweet
@@ -9,6 +10,9 @@ from newsfeeds.models import NewsFeed
 
 
 class TestCase(DjangoTestCase):
+
+    def clear_cache(self):
+        caches['testing'].clear()
 
     @property
     def anonymous_client(self):

@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     pkg-config libgirepository1.0-dev libcairo2-dev \
     libmysqlclient-dev \
     openssh-server tree \
-    lsof net-tools
+    lsof net-tools \
+    memcached
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
