@@ -11,7 +11,7 @@ from friendships.api.serializers import (
     FollowingSerializer,
     FriendshipSerialierForCreate,
 )
-from utils.paginations import FriendshipPagination
+from friendships.api.paginations import FriendshipPagination
 
 class FriendshipViewSet(GenericViewSet):
     serializer_class = FriendshipSerialierForCreate
