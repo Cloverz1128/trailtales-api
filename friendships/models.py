@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save, pre_delete
+from friendships.listeners import invalidate_following_cache
 
 class Friendship(models.Model):
     from_user = models.ForeignKey(
@@ -26,3 +28,7 @@ class Friendship(models.Model):
         
     def __str__(self):
         return f'{self.from_user.id} followed {self.to_user.id}'
+
+# hook up with listeners to invalidate cache
+pre_delete.connect(invalidate_following_cache, sender=Friendship)
+post_save.connect(invalidate_following_cache, sender=Friendship)
