@@ -142,3 +142,25 @@ class NewsFeedApiTests(TestCase):
         self.assertEqual(results[0]['tweet']['user']['username'], 'testuser2')
         self.assertEqual(results[0]['tweet']['user']['nickname'], 'new user1 name')
         self.assertEqual(results[1]['tweet']['user']['username'], 'newusername1')
+
+    def test_tweet_cache(self):
+        tweet = self.create_tweet(self.testuser1, 'content1')
+        self.create_newsfeed(self.testuser2, tweet)
+        response = self.testuser2_client.get(NEWSFEEDS_URL)
+        results = response.data['results']
+        self.assertEqual(results[0]['tweet']['user']['username'], 'testuser1')
+        self.assertEqual(results[0]['tweet']['content'], 'content1')
+
+        # update username
+        self.testuser1.username = 'newusername1'
+        self.testuser1.save()
+        response = self.testuser2_client.get(NEWSFEEDS_URL)
+        results = response.data['results']
+        self.assertEqual(results[0]['tweet']['user']['username'], 'newusername1')
+
+        # update content
+        tweet.content = 'content2'
+        tweet.save()
+        response = self.testuser2_client.get(NEWSFEEDS_URL)
+        results = response.data['results']
+        self.assertEqual(results[0]['tweet']['content'], 'content2')
