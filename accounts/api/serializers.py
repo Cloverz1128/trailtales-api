@@ -28,14 +28,10 @@ class UserProfileSerializerForUpdate(serializers.ModelSerializer):
         fields = ('nickname', 'avatar')
 
 class UserSerializerForTweet(UserSerializerWithProfile):
-    class Meta:
-        model = User
-        fields = ['id', 'username']
+    pass
 
 class UserSerializerForFriendship(UserSerializerWithProfile):
-    class Meta:
-        model = User
-        fields = ['id', 'username']
+    pass
 
 class UserSerializerForComment(UserSerializerWithProfile):
     pass

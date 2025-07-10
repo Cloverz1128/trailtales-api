@@ -8,11 +8,12 @@ from tweets.models import Tweet
 
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserSerializerForLike()
+    user = UserSerializerForLike(source='cached_user')
 
     class Meta:
         model = Like
         fields = ('user', 'created_at')
+    
 
 class BaseLikeSerializerForCreateAndCancel(serializers.ModelSerializer):
     content_type = serializers.ChoiceField(choices=['comment', 'tweet'])
