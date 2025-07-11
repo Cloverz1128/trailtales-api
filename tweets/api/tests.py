@@ -2,6 +2,8 @@ from testing.testcases import TestCase
 from rest_framework.test import APIClient
 from tweets.models import Tweet, TweetPhoto
 from django.core.files.uploadedfile import SimpleUploadedFile
+from utils.redis_client import RedisClient
+from utils.redis_serializers import DjangoModelSerializer
 
 from utils.paginations import EndlessPagination
 
@@ -219,4 +221,16 @@ class TweetApiTests(TestCase):
         self.assertEqual(response.data['has_next_page'], False)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['id'], new_tweet.id)
+
+    def test_cache_tweet_in_redis(self):
+        tweet = self.create_tweet(self.user1)
+        conn = RedisClient.get_connection()
+        serialized_data = DjangoModelSerializer.serialize(tweet)
+        conn.set(f'tweet:{tweet.id}', serialized_data)
+        data = conn.get(f'tweet:not_exists')
+        self.assertEqual(data, None)
+
+        data = conn.get(f'tweet:{tweet.id}')
+        cached_tweet = DjangoModelSerializer.deserialize(data)
+        self.assertEqual(tweet, cached_tweet)
 
