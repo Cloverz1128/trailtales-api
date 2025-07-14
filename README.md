@@ -1,6 +1,7 @@
-# Twitter
+# TrailTales
 
-A simple Twitter-like backend project built with **Django**, **Django REST Framework**, and **MySQL**, containerized with **Docker Compose** for local development.
+A social platform for travel and outdoor enthusiasts to share journeys, campsite experiences, and scenic photos.
+Twitter-like backend project built with **Django**, **Django REST Framework**, and **MySQL**, containerized with **Docker Compose** for local development.
 
 ### Docker Compose
 ```
