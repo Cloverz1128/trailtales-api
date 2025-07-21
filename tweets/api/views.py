@@ -1,7 +1,6 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 from tweets.models import Tweet
 from tweets.api.serializers import (
     TweetSerializer, 
@@ -9,6 +8,7 @@ from tweets.api.serializers import (
     TweetSerializerForDetail,
 )
 from newsfeeds.services import NewsFeedService
+from tweets.services import TweetService
 from utils.decorators import required_params
 from utils.paginations import EndlessPagination
 class TweetViewSet(GenericViewSet):
@@ -24,10 +24,11 @@ class TweetViewSet(GenericViewSet):
     @required_params(params=['user_id'])
     def list(self, request):
         user_id=request.query_params['user_id']
-        tweets = Tweet.objects.filter(user_id=user_id).order_by('-created_at')
-        tweets = self.paginate_queryset(tweets)
+        # tweets = Tweet.objects.filter(user_id=user_id).order_by('-created_at')
+        tweets = TweetService.get_cached_tweets(user_id=user_id)
+        pagination = self.paginate_queryset(tweets)
         serializer = TweetSerializer(
-            tweets, 
+            pagination, 
             context={'request': request},
             many=True,
         )

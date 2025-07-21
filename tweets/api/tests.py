@@ -12,13 +12,13 @@ TWEET_RETRIEVE_API = '/api/tweets/{}/'
 class TweetApiTests(TestCase):
     def setUp(self):
         self.clear_cache()
-        self.user1 = self.create_user('user1')
+        self.testuser1 = self.create_user('testuser1')
         self.tweets1 = [self.create_tweet(
-            user=self.user1,
+            user=self.testuser1,
         ) for i in range(3)]
 
-        self.user1_client = APIClient()
-        self.user1_client.force_authenticate(self.user1) # force_authenticate to use this authenticated user to do the access of all api
+        self.testuser1_client = APIClient()
+        self.testuser1_client.force_authenticate(self.testuser1) # force_authenticate to use this authenticated user to do the access of all api
 
         self.user2 = self.create_user('user2')
         self.tweets2 = [self.create_tweet(
@@ -34,7 +34,7 @@ class TweetApiTests(TestCase):
         # Test GET with user_id in dictionary
         response = self.anonymous_client.get(
             path=TWEET_LIST_URL,
-            data={'user_id': self.user1.id},
+            data={'user_id': self.testuser1.id},
         )
         self.assertEqual(len(response.data['results']), 3)
 
@@ -55,24 +55,24 @@ class TweetApiTests(TestCase):
         self.assertEqual(response.status_code, 403)
 
         # test post without content
-        response = self.user1_client.post(TWEET_CREATE_URL)
+        response = self.testuser1_client.post(TWEET_CREATE_URL)
         self.assertEqual(response.status_code, 400)
 
         # validate tweet content 
         # content can not be too short
-        response = self.user1_client.post(TWEET_CREATE_URL, {'content': '1'})
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {'content': '1'})
         self.assertEqual(response.status_code, 400)
         # content can not be too long
-        response = self.user1_client.post(TWEET_CREATE_URL, {'content': '1'*141})
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {'content': '1'*141})
         self.assertEqual(response.status_code, 400)
         # test right case
         tweets_count = Tweet.objects.count()
-        response = self.user1_client.post(
+        response = self.testuser1_client.post(
             TWEET_CREATE_URL,
             {'content': 'Hello this is my first tweet'}
         )
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['user']['id'], self.user1.id)
+        self.assertEqual(response.data['user']['id'], self.testuser1.id)
         self.assertEqual(Tweet.objects.count(), tweets_count + 1)
 
     def test_retrieve(self):
@@ -83,29 +83,29 @@ class TweetApiTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
         # get tweet with all comments 
-        tweet = self.create_tweet(self.user1)
+        tweet = self.create_tweet(self.testuser1)
         url = TWEET_RETRIEVE_API.format(tweet.id)
         response = self.anonymous_client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data['comments']), 0)
 
         self.create_comment(user=self.user2, tweet=tweet, content="holly a comment")
-        self.create_comment(self.user1, tweet, 'hmm...')
+        self.create_comment(self.testuser1, tweet, 'hmm...')
         # add more comments for other tweet
-        self.create_comment(self.user1, self.create_tweet(self.user2), 'nothing')
+        self.create_comment(self.testuser1, self.create_tweet(self.user2), 'nothing')
         response = self.anonymous_client.get(url)
         self.assertEqual(len(response.data['comments']), 2)
 
     def test_create_with_files(self):
         # without tile
-        response = self.user1_client.post(TWEET_CREATE_URL, {
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {
             'content': 'a selfie',
         })
         self.assertEqual(response.status_code, 201)
         self.assertEqual(TweetPhoto.objects.count(), 0)
         
         # file list empty
-        response = self.user1_client.post(TWEET_CREATE_URL, {
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {
             'content': 'a selfie',
             'files': [],
         })
@@ -119,7 +119,7 @@ class TweetApiTests(TestCase):
             content=str.encode('a fake image'),
             content_type='image/jpeg',
         )
-        response = self.user1_client.post(TWEET_CREATE_URL, {
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {
             'content': 'a selfie',
             'files': [file],
         })
@@ -137,7 +137,7 @@ class TweetApiTests(TestCase):
             content=str.encode('selfie 2'),
             content_type='image/jpeg',
         )
-        response = self.user1_client.post(TWEET_CREATE_URL, {
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {
             'content': 'two selfies',
             'files': [file1, file2],
         })
@@ -146,7 +146,7 @@ class TweetApiTests(TestCase):
 
         # api response including photo_urls
         retrieve_url = TWEET_RETRIEVE_API.format(response.data['id'])
-        response = self.user1_client.get(retrieve_url)
+        response = self.testuser1_client.get(retrieve_url)
         self.assertEqual(len(response.data['photo_urls']), 2)
         self.assertEqual('selfie1' in response.data['photo_urls'][0], True)
         self.assertEqual('selfie2' in response.data['photo_urls'][1], True)
@@ -160,7 +160,7 @@ class TweetApiTests(TestCase):
             )
             for i in range(10)
         ]
-        response = self.user1_client.post(TWEET_CREATE_URL, {
+        response = self.testuser1_client.post(TWEET_CREATE_URL, {
             'content': 'failed due to number of photos exceeded limit',
             'files': files,
         })
@@ -174,13 +174,13 @@ class TweetApiTests(TestCase):
         # we have created self.tweets1 in setUp
         for i in range(page_size * 2 - len(self.tweets1)):
             self.tweets1.append(
-                self.create_tweet(self.user1, 'tweet{}'.format(i)))
+                self.create_tweet(self.testuser1, 'tweet{}'.format(i)))
 
         tweets = self.tweets1[::-1]
 
         # pull the first page
-        response = self.user1_client.get(TWEET_LIST_URL,
-                                         {'user_id': self.user1.id})
+        response = self.testuser1_client.get(TWEET_LIST_URL,
+                                         {'user_id': self.testuser1.id})
         self.assertEqual(response.data['has_next_page'], True)
         self.assertEqual(len(response.data['results']), page_size)
         self.assertEqual(response.data['results'][0]['id'], tweets[0].id)
@@ -189,9 +189,9 @@ class TweetApiTests(TestCase):
                          tweets[page_size - 1].id)
 
         # pull the second page
-        response = self.user1_client.get(TWEET_LIST_URL, {
+        response = self.testuser1_client.get(TWEET_LIST_URL, {
             'created_at__lt': tweets[page_size - 1].created_at,  # last item in last page
-            'user_id': self.user1.id,
+            'user_id': self.testuser1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
         self.assertEqual(len(response.data['results']), page_size)
@@ -203,20 +203,22 @@ class TweetApiTests(TestCase):
                          tweets[2 * page_size - 1].id)
 
         # pull latest newsfeeds
-        response = self.user1_client.get(TWEET_LIST_URL, {
+        response = self.testuser1_client.get(TWEET_LIST_URL, {
             'created_at__gt': tweets[0].created_at,
-            'user_id': self.user1.id,
+            'user_id': self.testuser1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
         self.assertEqual(len(response.data['results']), 0)
 
-        new_tweet = self.create_tweet(self.user1, 'a new tweet comes in')
+        new_tweet = self.create_tweet(self.testuser1, 'a new tweet comes in')
 
-        response = self.user1_client.get(TWEET_LIST_URL, {
+        response = self.testuser1_client.get(TWEET_LIST_URL, {
             'created_at__gt': tweets[0].created_at,
-            'user_id': self.user1.id,
+            'user_id': self.testuser1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['id'], new_tweet.id)
+
+
 

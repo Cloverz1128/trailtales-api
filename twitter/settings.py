@@ -177,16 +177,22 @@ MEDIA_ROOT = 'media/'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211', # memcached server name in docker compose
         'TIMEOUT': 86400,
     },
     'testing': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': 'memcached:11211', # memcached server name in docker compose
         'TIMEOUT': 86400,
         'KEY_PREFIX': 'testing',
     },
 }
+
+# Redis
+REDIS_HOST = 'redis' # redis server name in docker compose 
+REDIS_PORT = 6379
+REDIS_DB = 0 if TESTING else 1
+REDIS_KEY_EXPIRE_TIME = 7 * 86400  # in seconds
 
 try: 
 	from .local_settings import *
