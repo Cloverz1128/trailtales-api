@@ -25,8 +25,12 @@ class TweetViewSet(GenericViewSet):
     def list(self, request):
         user_id=request.query_params['user_id']
         # tweets = Tweet.objects.filter(user_id=user_id).order_by('-created_at')
-        tweets = TweetService.get_cached_tweets(user_id=user_id)
-        page = self.paginate_queryset(tweets)
+        cached_tweets = TweetService.get_cached_tweets(user_id=user_id)
+        page = self.paginator.paginate_cached_list(cached_tweets, request)
+        if page is None: 
+            queryset = Tweet.objects.filter(user=request.user).order_by('-created_at')
+            page = self.paginate_queryset(queryset)
+	
         serializer = TweetSerializer(
             page, 
             context={'request': request},
