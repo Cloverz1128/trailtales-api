@@ -7,6 +7,7 @@ from comments.api.serializers import CommentSerializer
 from likes.api.serializers import LikeSerializer
 from likes.services import LikeService
 from tweets.services import TweetService
+from utils.redis_helper import RedisHelper
 
 class TweetSerializer(serializers.ModelSerializer):
     user = UserSerializerForTweet(source='cached_user')
@@ -28,10 +29,12 @@ class TweetSerializer(serializers.ModelSerializer):
              'photo_urls',
              )
     def get_comments_count(self, obj):
-        return obj.comment_set.count()
-
+        # optimize: select count(*) -> redis get
+        return RedisHelper.get_count(obj, 'comments_count')
+    
     def get_likes_count(self, obj):
-        return obj.like_set.count()
+        # optimize: select count(*) -> redis get
+        return RedisHelper.get_count(obj, 'likes_count')
 
     def get_has_liked(self, obj):
         return LikeService.has_liked(self.context['request'].user, obj)
